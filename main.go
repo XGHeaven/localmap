@@ -1,13 +1,14 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"io"
 	"net"
-	"errors"
-	"./server"
+
 	"./client"
 	"./logger"
+	"./server"
 )
 
 func getMessage(conn net.Conn) {
@@ -17,9 +18,9 @@ func getMessage(conn net.Conn) {
 var (
 	isServer bool
 	isClient bool
-	sPort int
-	cPort int
-	sAddr string
+	sPort    int
+	cPort    int
+	sAddr    string
 )
 
 func init() {
@@ -67,11 +68,16 @@ func main() {
 		}
 	}()
 	if isServer {
-		option := server.ServerOption{Cport: sPort}
-		server.Start(option)
+		server.Option = server.ServerOption{
+			Addr: net.TCPAddr{IP: net.IPv4zero, Port: sPort},
+		}
+		server.Start()
 	}
 	if isClient {
-		option := client.ClientOption{Addr:sAddr, Cport: cPort, Sport: sPort}
-		client.Start(option)
+		client.Option = client.ClientOption{
+			SAddr: net.TCPAddr{IP: net.IP{127, 0, 0, 1}, Port: sPort},
+			CAddr: net.TCPAddr{IP: net.IP{127, 0, 0, 1}, Port: cPort},
+		}
+		client.Start()
 	}
 }
