@@ -3,7 +3,7 @@ package server
 import (
 	"net"
 
-	"../logger"
+	"github.com/xgheaven/localmap/logger"
 )
 
 var Option ServerOption

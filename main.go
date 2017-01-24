@@ -6,9 +6,9 @@ import (
 	"io"
 	"net"
 
-	"./client"
-	"./logger"
-	"./server"
+	"github.com/xgheaven/localmap/client"
+	"github.com/xgheaven/localmap/logger"
+	"github.com/xgheaven/localmap/server"
 )
 
 func getMessage(conn net.Conn) {

@@ -4,9 +4,9 @@ import (
 	"net"
 	"strconv"
 
-	"../conn"
-	"../logger"
-	"../util"
+	"github.com/xgheaven/localmap/conn"
+	"github.com/xgheaven/localmap/logger"
+	"github.com/xgheaven/localmap/util"
 )
 
 func HandleConnect(c *net.TCPConn) {

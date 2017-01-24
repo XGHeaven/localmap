@@ -6,7 +6,7 @@ import (
 	"net"
 	"time"
 
-	"../logger"
+	"github.com/xgheaven/localmap/logger"
 )
 
 const (

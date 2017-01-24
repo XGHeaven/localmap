@@ -4,7 +4,7 @@ import (
 	"io"
 	"net"
 
-	"../logger"
+	"github.com/xgheaven/localmap/logger"
 )
 
 const (

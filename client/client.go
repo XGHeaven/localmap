@@ -1,16 +1,14 @@
 package client
 
 import (
-	"net"
-
-	"../conn"
-	"../util"
-	// "log"
 	"fmt"
 	"io"
+	"net"
 	"syscall"
 
-	"../logger"
+	"github.com/xgheaven/localmap/conn"
+	"github.com/xgheaven/localmap/logger"
+	"github.com/xgheaven/localmap/util"
 )
 
 var Option ClientOption
