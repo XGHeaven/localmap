@@ -5,6 +5,7 @@ import (
 	"flag"
 	"io"
 	"net"
+	"os"
 
 	"github.com/xgheaven/localmap/client"
 	"github.com/xgheaven/localmap/logger"
@@ -20,16 +21,25 @@ var (
 	isClient bool
 	sPort    int
 	cPort    int
-	sAddr    string
+	sAddr    net.IP
+	showHelp bool
+	_sAddr   string
 )
 
 func init() {
-	flag.BoolVar(&isServer, "server", false, "-server")
-	flag.BoolVar(&isClient, "client", false, "-client")
-	flag.IntVar(&sPort, "sport", 8000, "-sport=8000")
-	flag.IntVar(&cPort, "cport", 8080, "-cport=8080")
-	flag.StringVar(&sAddr, "addr", "127.0.0.1", "-addr=127.0.0.1")
+	flag.BoolVar(&isServer, "server", false, "start as server mode")
+	flag.BoolVar(&isClient, "client", false, "start as client mode")
+	flag.IntVar(&sPort, "sport", 8000, "set server port to connect (only client mode)")
+	flag.IntVar(&cPort, "cport", -1, "set client port to connect (only client mode)")
+	flag.StringVar(&_sAddr, "addr", "127.0.0.1", "where server address to connect, support ip, domain")
+	flag.BoolVar(&showHelp, "help", false, "show help")
 	flag.Parse()
+
+	if showHelp {
+		flag.Usage()
+		os.Exit(0)
+	}
+
 	if !isClient {
 		isServer = true
 		isClient = false
@@ -54,8 +64,13 @@ func checkServerOption() error {
 }
 
 func checkClientOption() error {
-	if sAddr == "" {
-		return errors.New("empty server addr")
+	if addr, err := net.ResolveIPAddr("ip", _sAddr); err != nil {
+		return errors.New("wrong server address, please use right address")
+	} else {
+		sAddr = addr.IP
+	}
+	if cPort == -1 {
+		return errors.New("please specify which port to connect for client")
 	}
 	return nil
 }
@@ -75,7 +90,7 @@ func main() {
 	}
 	if isClient {
 		client.Option = client.ClientOption{
-			SAddr: net.TCPAddr{IP: net.IP{127, 0, 0, 1}, Port: sPort},
+			SAddr: net.TCPAddr{IP: sAddr, Port: sPort},
 			CAddr: net.TCPAddr{IP: net.IP{127, 0, 0, 1}, Port: cPort},
 		}
 		client.Start()
