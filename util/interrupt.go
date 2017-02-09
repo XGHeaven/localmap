@@ -1,13 +1,13 @@
 package util
 
-import(
-  "os/signal"
-  "os"
-  "syscall"
+import (
+	"os"
+	"os/signal"
+	"syscall"
 )
 
-func  NewInterruptChan(sig os.Signal) (c chan os.Signal) {
-  c = make(chan os.Signal, 5)
-  signal.Notify(c, syscall.SIGTERM)
-  return
+func NewInterruptChan(sig os.Signal) (c chan os.Signal) {
+	c = make(chan os.Signal, 2)
+	signal.Notify(c, syscall.SIGTERM, os.Interrupt)
+	return
 }

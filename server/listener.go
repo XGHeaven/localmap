@@ -17,12 +17,12 @@ var (
 	random = rand.New(rand.NewSource(time.Now().UnixNano()))
 )
 
-func NewRandomListener(min, max int) (*net.TCPListener, int, error) {
+func (client *ServerClient) NewRandomListener(min, max int) (*net.TCPListener, uint16, error) {
 	var (
 		listener *net.TCPListener
 		err      error
 		try      = 0
-		addr     = Option.Addr
+		addr     = client.server.Addr
 	)
 
 	for ; try < maxTry; try++ {
@@ -31,8 +31,8 @@ func NewRandomListener(min, max int) (*net.TCPListener, int, error) {
 		if err != nil {
 			continue
 		}
-		logger.Infof("generator port at %d and listen at this", addr.Port)
-		return listener, addr.Port, nil
+		logger.Infof("generator port at %d for client %s", addr.Port, client.UUID)
+		return listener, uint16(addr.Port), nil
 	}
 
 	return nil, 0, errors.New("try out")

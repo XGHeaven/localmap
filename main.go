@@ -83,16 +83,18 @@ func main() {
 		}
 	}()
 	if isServer {
-		server.Option = server.ServerOption{
+		option := &server.ServerOption{
 			Addr: net.TCPAddr{IP: net.IPv4zero, Port: sPort},
 		}
-		server.Start()
+		serverInstance := server.NewServer(option)
+		serverInstance.Start()
 	}
 	if isClient {
-		client.Option = client.ClientOption{
+		option := &client.ClientOption{
 			SAddr: net.TCPAddr{IP: sAddr, Port: sPort},
 			CAddr: net.TCPAddr{IP: net.IP{127, 0, 0, 1}, Port: cPort},
 		}
-		client.Start()
+		clientInstance := client.NewClient(option)
+		clientInstance.Start()
 	}
 }
