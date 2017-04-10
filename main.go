@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"flag"
-	"io"
 	"net"
 	"os"
 
@@ -11,10 +10,6 @@ import (
 	"github.com/xgheaven/localmap/logger"
 	"github.com/xgheaven/localmap/server"
 )
-
-func getMessage(conn net.Conn) {
-	io.Copy(conn, conn)
-}
 
 var (
 	isServer bool
@@ -24,6 +19,7 @@ var (
 	sAddr    net.IP
 	showHelp bool
 	_sAddr   string
+	debug    bool
 )
 
 func init() {
@@ -33,11 +29,16 @@ func init() {
 	flag.IntVar(&cPort, "cport", -1, "set client port to connect (only client mode)")
 	flag.StringVar(&_sAddr, "addr", "127.0.0.1", "where server address to connect, support ip, domain")
 	flag.BoolVar(&showHelp, "help", false, "show help")
+	flag.BoolVar(&debug, "debug", false, "show debug message")
 	flag.Parse()
 
 	if showHelp {
 		flag.Usage()
 		os.Exit(0)
+	}
+
+	if debug {
+		logger.LogLevel = logger.DEBUG
 	}
 
 	if !isClient {
