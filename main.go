@@ -9,6 +9,13 @@ import (
 	"github.com/xgheaven/localmap/client"
 	"github.com/xgheaven/localmap/logger"
 	"github.com/xgheaven/localmap/server"
+	"fmt"
+)
+
+// link variable
+var (
+	Version string
+	DateTime string
 )
 
 var (
@@ -18,6 +25,7 @@ var (
 	cPort    int
 	sAddr    net.IP
 	showHelp bool
+	showVersion bool
 	_sAddr   string
 	debug    bool
 )
@@ -30,7 +38,14 @@ func init() {
 	flag.StringVar(&_sAddr, "addr", "127.0.0.1", "where server address to connect, support ip, domain")
 	flag.BoolVar(&showHelp, "help", false, "show help")
 	flag.BoolVar(&debug, "debug", false, "show debug message")
+	flag.BoolVar(&showVersion, "version", false, "show version")
 	flag.Parse()
+
+	if showVersion {
+		fmt.Println("Version:\t", Version)
+		fmt.Println("Build on:\t", DateTime)
+		os.Exit(0)
+	}
 
 	if showHelp {
 		flag.Usage()
