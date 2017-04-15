@@ -90,7 +90,7 @@ loop:
 			break
 		}
 		if err != nil {
-			//logger.Error("Client:", client.UUID, err)
+			logger.Error("Client:", client.UUID, err)
 			continue
 		}
 		switch block.Type {

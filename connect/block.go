@@ -61,6 +61,9 @@ func NewBlock(reader io.Reader) (*Block, error) {
 	rawHeader := make([]byte, 4)
 	n, err := reader.Read(rawHeader)
 	logger.Debug(n, err == nil)
+	if err != nil {
+		return nil, err
+	}
 	if n != 4 {
 		return nil, errors.New("wrong block header")
 	}
