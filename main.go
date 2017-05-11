@@ -51,6 +51,8 @@ func init() {
 		logger.LogLevel = logger.DEBUG
 	}
 
+	logger.Info("version", util.Version)
+	logger.Info("build", util.DateTime)
 	if !isClient {
 		isServer = true
 		isClient = false
