@@ -120,6 +120,7 @@ func (client *ServerClient) Start() {
 		}
 	}()
 
+loop:
 	for {
 		client.SetReadDeadline(time.Now().Add(time.Minute))
 		block, err := client.ReadBlock()
@@ -145,7 +146,7 @@ func (client *ServerClient) Start() {
 		case connect.CLOSE:
 			client.WriteClose()
 			client.EndSelf()
-			break
+			break loop
 		case connect.HEART:
 			continue
 		}
