@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/xgheaven/localmap/logger"
+	"github.com/xgheaven/localmap/util"
 )
 
 /*
@@ -35,7 +36,7 @@ func (conn *TCPConnect) ReadHello() (*HelloBlock, error) {
 }
 
 func (conn *TCPConnect) WriteHello() {
-	block := &Block{BlockHeader: &BlockHeader{Type: HEL}}
+	block := &Block{BlockHeader: &BlockHeader{Type: HEL}, Data: []byte(util.Version)}
 	conn.WriteBlock(block)
 }
 
@@ -55,6 +56,7 @@ func (conn *TCPConnect) WriteHelloReply(sPort, cPort uint16) {
 	data := make([]byte, 4)
 	binary.LittleEndian.PutUint16(data[:2], sPort)
 	binary.LittleEndian.PutUint16(data[2:], cPort)
+	data = append(data, []byte(util.Version)...)
 	block := &Block{BlockHeader: &BlockHeader{Type: HELRLY}}
 	block.Data = data
 	conn.WriteBlock(block)

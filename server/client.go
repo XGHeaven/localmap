@@ -41,7 +41,7 @@ func NewServerClient(server *Server, clientConn *connect.TCPConnect) *ServerClie
 func (client *ServerClient) Start() {
 	// set timeout 10s
 	client.SetReadDeadline(time.Now().Add(time.Second * 10))
-	_, err := client.ReadHello()
+	helloBlock, err := client.ReadHello()
 	if err != nil {
 		if e, ok := err.(net.Error); ok {
 			if e.Timeout() {
@@ -52,6 +52,8 @@ func (client *ServerClient) Start() {
 		client.Close()
 		return
 	}
+
+	logger.Info("client connect success, version", helloBlock.Version)
 
 	// remove timeout
 	client.SetReadDeadline(time.Time{})

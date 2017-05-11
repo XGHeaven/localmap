@@ -1,11 +1,12 @@
 $version = "v0.1.0-beta2"
+$importPath = "github.com/xgheaven/localmap"
 
 def osarch(os, arch, suffix = nil)
   desc "build executable for #{os} with #{arch}"
   filename = "localmap-#{os}-#{arch}"
   filename += ".#{suffix}" if suffix
   task "build-#{os}-#{arch}" do |t|
-    sh "GOOS=#{os} GOARCH=#{arch} go build -v -ldflags \"-X main.Version=#{$version} -X main.DateTime=#{Time.now.strftime("%Y-%m-%d.%H:%M")}\" -o dist/#{filename}"
+    sh "GOOS=#{os} GOARCH=#{arch} go build -v -ldflags \"-X #{$importPath}/util.Version=#{$version} -X #{$importPath}/util.DateTime=#{Time.now.strftime("%Y-%m-%d.%H:%M")}\" -o dist/#{filename}"
   end
 
   desc "zip #{os}-#{arch} file"
@@ -37,7 +38,7 @@ task :clean do
 end
 
 task :build do |t|
-  sh "go build -v -ldflags \"-X main.Version=#{$version} -X main.DateTime=#{Time.now.strftime("%Y-%m-%d.%H:%M")}\" -o dist/localmap"
+  sh "go build -v -ldflags \"-X #{$importPath}/util.Version=#{$version} -X #{$importPath}/util.DateTime=#{Time.now.strftime("%Y-%m-%d.%H:%M")}\" -o dist/localmap"
 end
 
 task :default => [:build]

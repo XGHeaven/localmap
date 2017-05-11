@@ -46,7 +46,8 @@ func (client *Client) Start() {
 	client.DSAddr.Port = int(helloReplyBlock.Sport)
 	client.DCAddr.Port = int(helloReplyBlock.Cport)
 
-	logger.Infof("connect to server, please use %s\n", client.DSAddr.String())
+	logger.Info("connect to server success, server version", helloReplyBlock.Version)
+	logger.Infof("please use %s\n", client.DSAddr.String())
 
 	go client.WaitEnd()
 

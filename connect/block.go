@@ -41,12 +41,14 @@ type (
 
 	HelloBlock struct {
 		*Block
+		Version string
 	}
 
 	HelloReplyBlcok struct {
 		*Block
-		Sport uint16
-		Cport uint16
+		Version string
+		Sport   uint16
+		Cport   uint16
 	}
 
 	ReqConnBlock struct {
@@ -102,13 +104,15 @@ func NewBlock(reader io.Reader) (*Block, error) {
 
 func NewHelloBlock(block *Block) (helloBlock *HelloBlock, err error) {
 	helloBlock = &HelloBlock{Block: block}
+	helloBlock.Version = string(block.Data)
 	return
 }
 
 func NewHelloReplyBlock(block *Block) (helloReplyBlcok *HelloReplyBlcok, err error) {
 	helloReplyBlcok = &HelloReplyBlcok{Block: block}
 	helloReplyBlcok.Sport = binary.LittleEndian.Uint16(helloReplyBlcok.Data[:2])
-	helloReplyBlcok.Cport = binary.LittleEndian.Uint16(helloReplyBlcok.Data[2:])
+	helloReplyBlcok.Cport = binary.LittleEndian.Uint16(helloReplyBlcok.Data[2:4])
+	helloReplyBlcok.Version = string(block.Data[4:])
 	return
 }
 

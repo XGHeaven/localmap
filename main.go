@@ -10,12 +10,7 @@ import (
 	"github.com/xgheaven/localmap/client"
 	"github.com/xgheaven/localmap/logger"
 	"github.com/xgheaven/localmap/server"
-)
-
-// link variable
-var (
-	Version  string
-	DateTime string
+	"github.com/xgheaven/localmap/util"
 )
 
 var (
@@ -42,8 +37,8 @@ func init() {
 	flag.Parse()
 
 	if showVersion {
-		fmt.Println("Version:\t", Version)
-		fmt.Println("Build on:\t", DateTime)
+		fmt.Println("Version:\t", util.Version)
+		fmt.Println("Build on:\t", util.DateTime)
 		os.Exit(0)
 	}
 
