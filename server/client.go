@@ -27,6 +27,7 @@ type ServerClient struct {
 	Sport, Cport uint16
 	Slsn, Clsn   *net.TCPListener
 	Schan, Cchan chan *net.TCPConn
+	heart        *time.Ticker
 }
 
 func NewServerClient(server *Server, clientConn *connect.TCPConnect) *ServerClient {
@@ -103,13 +104,15 @@ func (client *ServerClient) Start() {
 		}
 	}()
 
+	client.heart = time.NewTicker(time.Second * 55)
+
 	// send heart
 	go func() {
-		for {
-			<-time.NewTimer(time.Second * 55).C
+		for range client.heart.C {
 			_, err := client.WriteHeart()
 
 			if err != nil {
+				logger.Info("Heart Close", err)
 				break
 			}
 		}
@@ -157,7 +160,8 @@ func (client *ServerClient) End() {
 }
 
 func (client *ServerClient) EndSelf() {
-	delete(client.server.clients, client.UUID.String())
+	//delete(client.server.clients, client.UUID.String())
+	client.heart.Stop()
 	client.Slsn.Close()
 	logger.Info("Client:", client.UUID, client.Sport, "Closed")
 	client.Clsn.Close()
