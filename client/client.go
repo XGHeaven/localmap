@@ -4,13 +4,12 @@ import (
 	"io"
 	"net"
 	"syscall"
+	"time"
 
 	"github.com/xgheaven/localmap/connect"
 	"github.com/xgheaven/localmap/logger"
 	"github.com/xgheaven/localmap/util"
 )
-
-var Option ClientOption
 
 type (
 	Client struct {
@@ -51,18 +50,27 @@ func (client *Client) Start() {
 
 	go client.WaitEnd()
 
-loop:
 	for {
+		client.SetReadDeadline(time.Now().Add(time.Minute))
 		block, err := client.ReadBlock()
 		if err == io.EOF {
 			logger.Error("server EOF")
 			client.ForceEnd()
 			break
 		}
+
+		if e, ok := err.(net.Error); ok {
+			if e.Timeout() {
+				logger.Error(e)
+				break
+			}
+		}
+
 		if err != nil {
 			logger.Error(err)
 			continue
 		}
+
 		switch block.Type {
 		case connect.REQCON:
 			go func() {
@@ -89,7 +97,10 @@ loop:
 			}()
 		case connect.CLOSE:
 			client.EndSelf()
-			break loop
+			break
+		case connect.HEART:
+			client.WriteHeart()
+			continue
 		}
 	}
 

@@ -3,6 +3,7 @@ package server
 import (
 	"io"
 	"net"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/xgheaven/localmap/connect"
@@ -37,16 +38,27 @@ func NewServerClient(server *Server, clientConn *connect.TCPConnect) *ServerClie
 }
 
 func (client *ServerClient) Start() {
+	// set timeout 10s
+	client.SetReadDeadline(time.Now().Add(time.Second * 10))
 	_, err := client.ReadHello()
 	if err != nil {
+		if e, ok := err.(net.Error); ok {
+			if e.Timeout() {
+				logger.Error("client connect timeout")
+			}
+		}
+		logger.Error(err)
 		client.Close()
 		return
 	}
 
+	// remove timeout
+	client.SetReadDeadline(time.Time{})
+
 	sLsn, sPort, sErr := client.NewRandomListener(25000, 30000)
 
 	if sErr != nil {
-		logger.Error("Listen Server Error")
+		logger.Error("listen public port error")
 		client.Close()
 		return
 	}
@@ -54,7 +66,7 @@ func (client *ServerClient) Start() {
 	cLsn, cPort, cErr := client.NewRandomListener(30000, 35000)
 
 	if cErr != nil {
-		logger.Error("Listen Client Error")
+		logger.Error("listen private port error")
 		client.Close()
 		return
 	}
@@ -71,33 +83,66 @@ func (client *ServerClient) Start() {
 	go Push2Queue(client.Slsn, client.Schan)
 	go Push2Queue(client.Clsn, client.Cchan)
 
+	// handle connection
 	go func() {
 		for {
-			sConn := <-client.Schan
+			sConn, sOk := <-client.Schan
+			// check schan close
+			if !sOk {
+				logger.Warning("server channel close")
+				break
+			}
 			client.WriteRequestConnect()
-			cConn := <-client.Cchan
+			cConn, cOk := <-client.Cchan
+			if !cOk {
+				logger.Warning("client channel close")
+				break
+			}
 			go util.LinkConnect(sConn, cConn)
 			go util.LinkConnect(cConn, sConn)
 		}
 	}()
 
-loop:
+	// send heart
+	go func() {
+		for {
+			<-time.NewTimer(time.Second * 55).C
+			_, err := client.WriteHeart()
+
+			if err != nil {
+				break
+			}
+		}
+	}()
+
 	for {
+		client.SetReadDeadline(time.Now().Add(time.Minute))
 		block, err := client.ReadBlock()
 		if err == io.EOF {
 			logger.Error("Client:", client.UUID, "EOF")
 			client.EndSelf()
 			break
 		}
+
+		if e, ok := err.(net.Error); ok {
+			if e.Timeout() {
+				logger.Error(e)
+				break
+			}
+		}
+
 		if err != nil {
 			logger.Error("Client:", client.UUID, err)
 			continue
 		}
+
 		switch block.Type {
 		case connect.CLOSE:
 			client.WriteClose()
 			client.EndSelf()
-			break loop
+			break
+		case connect.HEART:
+			continue
 		}
 	}
 

@@ -14,6 +14,7 @@ const (
 	REQCON
 	REQRLY
 	CLOSE
+	HEART
 )
 
 const (
@@ -53,6 +54,10 @@ type (
 	}
 
 	CloseBlock struct {
+		*Block
+	}
+
+	HeartBlock struct {
 		*Block
 	}
 )
@@ -114,5 +119,10 @@ func NewReqConnBlock(block *Block) (reqConnBlock *ReqConnBlock, err error) {
 
 func NewCloseBlock(block *Block) (closeBlock *CloseBlock, err error) {
 	closeBlock = &CloseBlock{Block: block}
+	return
+}
+
+func NewHeartBlock(block *Block) (heartBlock *HeartBlock, err error) {
+	heartBlock = &HeartBlock{Block: block}
 	return
 }

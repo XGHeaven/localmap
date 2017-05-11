@@ -17,6 +17,7 @@ func (server *Server) Start() error {
 	listener, err := net.ListenTCP("tcp", &server.Addr)
 
 	if err != nil {
+		logger.Error(err)
 		return err
 	}
 
@@ -40,7 +41,7 @@ func (server *Server) AcceptClient() {
 		}
 
 		cli := NewServerClient(server, (*connect.TCPConnect)(clientConn))
-		server.clients[cli.UUID.String()] = cli
+		//server.clients[cli.UUID.String()] = cli
 
 		go cli.Start()
 	}

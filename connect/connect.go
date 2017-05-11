@@ -94,11 +94,16 @@ func (conn *TCPConnect) WriteClose() {
 	conn.WriteBlock(block)
 }
 
+func (conn *TCPConnect) WriteHeart() (int, error) {
+	block := &Block{BlockHeader: &BlockHeader{Type: HEART}}
+	return conn.WriteBlock(block)
+}
+
 func (conn *TCPConnect) ReadBlock() (*Block, error) {
 	return NewBlock(conn)
 }
 
-func (conn *TCPConnect) WriteBlock(block *Block) {
+func (conn *TCPConnect) WriteBlock(block *Block) (int, error) {
 	if block.Data != nil {
 		block.Len = uint16(len(block.Data))
 	} else {
@@ -110,5 +115,5 @@ func (conn *TCPConnect) WriteBlock(block *Block) {
 	binary.LittleEndian.PutUint16(data[2:4], block.Len)
 	data = append(data, block.Data...)
 	logger.Debug("Block: WRITE", data)
-	conn.Write(data)
+	return conn.Write(data)
 }

@@ -6,28 +6,28 @@ import (
 	"net"
 	"os"
 
+	"fmt"
 	"github.com/xgheaven/localmap/client"
 	"github.com/xgheaven/localmap/logger"
 	"github.com/xgheaven/localmap/server"
-	"fmt"
 )
 
 // link variable
 var (
-	Version string
+	Version  string
 	DateTime string
 )
 
 var (
-	isServer bool
-	isClient bool
-	sPort    int
-	cPort    int
-	sAddr    net.IP
-	showHelp bool
+	isServer    bool
+	isClient    bool
+	sPort       int
+	cPort       int
+	sAddr       net.IP
+	showHelp    bool
 	showVersion bool
-	_sAddr   string
-	debug    bool
+	_sAddr      string
+	debug       bool
 )
 
 func init() {
