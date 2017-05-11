@@ -1,4 +1,4 @@
-$version = "v0.1.0-beta2"
+$version = "v0.1.0"
 $importPath = "github.com/xgheaven/localmap"
 
 def osarch(os, arch, suffix = nil)
